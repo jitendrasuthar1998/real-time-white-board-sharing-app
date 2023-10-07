@@ -1,9 +1,11 @@
+import Forms from "./components/Forms"
+
 function App() {
 
 
   return (
-    <div>
-      <h1>Hello</h1>
+    <div className="container">
+      <Forms/>
     </div>
   )
 }
