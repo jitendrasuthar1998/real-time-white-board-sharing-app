@@ -1,10 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import rough from "roughjs";
 
-const roughGenerator = rough.generator();
-
 const WhiteBoard = (props) => {
-  const { canvasRef, ctxRef, elements, setElements, tool } = props;
+  const { canvasRef, ctxRef, elements, setElements, tool, color } = props;
 
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -13,9 +11,15 @@ const WhiteBoard = (props) => {
     canvas.height = window.innerHeight * 2;
     canvas.width = window.innerWidth * 2;
     const ctx = canvas.getContext("2d");
-
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
     ctxRef.current = ctx;
   }, []);
+
+  useEffect(() => {
+    ctxRef.current.strokeStyle = color;
+  }, [color]);
 
   const handleMouseDown = (e) => {
     const { offsetX, offsetY } = e.nativeEvent;
@@ -28,7 +32,7 @@ const WhiteBoard = (props) => {
           offsetX,
           offsetY,
           path: [[offsetX, offsetY]],
-          stroke: "black",
+          stroke: color,
         },
       ]);
     } else if (tool == "line") {
@@ -40,7 +44,7 @@ const WhiteBoard = (props) => {
           offsetY,
           width: offsetX,
           height: offsetY,
-          stroke: "black",
+          stroke: color,
         },
       ]);
     } else if (tool == "rect") {
@@ -52,7 +56,7 @@ const WhiteBoard = (props) => {
           offsetY,
           width: 0,
           height: 0,
-          stroke: "black",
+          stroke: color,
         },
       ]);
     }
@@ -93,7 +97,7 @@ const WhiteBoard = (props) => {
             }
           })
         );
-      }else if(tool == "rect"){
+      } else if (tool == "rect") {
         setElements((prevElements) =>
           prevElements.map((elem, index) => {
             if (index == elements.length - 1) {
@@ -125,16 +129,35 @@ const WhiteBoard = (props) => {
 
     elements.forEach((element) => {
       if (element.type == "pencil") {
-        roughGen.linearPath(element.path);
+        roughGen.linearPath(element.path, {
+          stroke: element.stroke,
+          strokeWidth: 5,
+          roughness: 0,
+        });
       } else if (element.type == "line") {
         roughGen.line(
           element.offsetX,
           element.offsetY,
           element.width,
-          element.height
+          element.height,
+          {
+            stroke: element.stroke,
+            strokeWidth: 5,
+            roughness: 0,
+          }
         );
-      }else if(element.type == "rect"){
-        roughGen.rectangle(element.offsetX, element.offsetY, element.width,element.height);
+      } else if (element.type == "rect") {
+        roughGen.rectangle(
+          element.offsetX,
+          element.offsetY,
+          element.width,
+          element.height,
+          {
+            stroke: element.stroke,
+            strokeWidth: 5,
+            roughness: 0,
+          }
+        );
       }
     });
   }, [elements]);
@@ -155,6 +178,7 @@ const WhiteBoard = (props) => {
       </div>
     </>
   );
+  ("black");
 };
 
 export default WhiteBoard;
