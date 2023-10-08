@@ -1,13 +1,15 @@
-import Forms from "./components/Forms"
+import { Routes, Route } from "react-router-dom";
+import Forms from "./components/Forms";
 
 function App() {
-
-
   return (
     <div className="container">
-      <Forms/>
+      <Routes>
+        <Route path="/" element={<Forms/>}/>
+        <Route path="/:roomId" element={<Forms/>}/>
+      </Routes>
     </div>
-  )
+  ); 
 }
 
-export default App
+export default App;
