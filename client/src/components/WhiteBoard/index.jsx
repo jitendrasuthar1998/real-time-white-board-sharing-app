@@ -2,9 +2,41 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import rough from "roughjs";
 
 const WhiteBoard = (props) => {
-  const { canvasRef, ctxRef, elements, setElements, tool, color } = props;
+  const {
+    canvasRef,
+    ctxRef,
+    elements,
+    setElements,
+    tool,
+    color,
+    user,
+    socket,
+  } = props;
 
   const [isDrawing, setIsDrawing] = useState(false);
+
+  const [img, setImg] = useState(null);
+
+  useEffect(() => {
+    socket.on("whiteBoardDataResponse", (data) => {
+      console.log("imageUrl is == ", data);
+      setImg(data.imgUrl);
+    });
+  }, []);
+
+
+  if (!user?.presenter) {
+    return (
+      <div className="border border-dark h-100 w-100 overflow-hidden">
+        <img
+          src={img}
+          alt="Real time white board share image"
+          style={{height:window.innerHeight *2, width:window.innerWidth * 2}}
+        />
+      </div>
+    );
+  }
+ 
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -160,6 +192,9 @@ const WhiteBoard = (props) => {
         );
       }
     });
+
+    const canvasImage = canvasRef.current.toDataURL();
+    socket.emit("whiteBoardData", canvasImage);
   }, [elements]);
 
   const handleMouseUp = (e) => {
@@ -178,7 +213,6 @@ const WhiteBoard = (props) => {
       </div>
     </>
   );
-  ("black");
 };
 
 export default WhiteBoard;
